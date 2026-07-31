@@ -14,10 +14,11 @@ jobs:
       - name: Checkout helper repository
         uses: actions/checkout@v4
 
-      - name: Install ARM toolchain
+      - name: Install ARM toolchain and packer dependency
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi python3
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi python3 python3-pip
+          python3 -m pip install --user crcmod
 
       - name: Fetch Egzumer v0.22
         run: |
@@ -41,7 +42,7 @@ jobs:
           mkdir -p release
           cp uv-k5-firmware-custom/firmware.packed.bin release/KINIU_PL_Egzumer_v0.22.packed.bin
           cp uv-k5-firmware-custom/firmware.bin release/KINIU_PL_Egzumer_v0.22.bin
-          cp uv-k5-firmware-custom/firmware.elf release/KINIU_PL_Egzumer_v0.22.elf
+          cp uv-k5-firmware-custom/firmware release/KINIU_PL_Egzumer_v0.22.elf
           cp uvk5-pl/build_polish.py release/build_polish.py
           cat > release/README_PL.txt <<'EOF'
           Quansheng UV-K5 / UV-K6 - Egzumer v0.22 KINIU_PL
