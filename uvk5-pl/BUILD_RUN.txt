@@ -1,1 +1,2 @@
 Build request for KINIU_PL Egzumer v0.22 firmware.
+Retry after reset-label length fix.
