@@ -24,7 +24,9 @@ jobs:
           git clone --depth 1 --branch v0.22 https://github.com/egzumer/uv-k5-firmware-custom.git
 
       - name: Apply Polish localization
-        run: python3 uvk5-pl/build_polish.py
+        run: |
+          python3 uvk5-pl/build_polish.py
+          sed -i 's/"WSZYST"/"CAL"/g' uv-k5-firmware-custom/ui/menu.c
 
       - name: Build firmware
         working-directory: uv-k5-firmware-custom
