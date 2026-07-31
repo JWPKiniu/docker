@@ -1,0 +1,2 @@
+Build request for KINIU_PL Egzumer v0.22 firmware.
+Retry after crcmod and ELF collection fix.
