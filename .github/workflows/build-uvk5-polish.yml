@@ -2,7 +2,7 @@ name: Build UV-K5 Polish firmware
 
 on:
   push:
-    branches: [uvk5-polskie-menu]
+    branches: [main, uvk5-polskie-menu]
   pull_request:
     branches: [main]
   workflow_dispatch:
