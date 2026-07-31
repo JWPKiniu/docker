@@ -1,0 +1,68 @@
+name: Build UV-K5 Polish firmware
+
+on:
+  push:
+    branches: [uvk5-polskie-menu]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout helper repository
+        uses: actions/checkout@v4
+
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi python3
+
+      - name: Fetch Egzumer v0.22
+        run: |
+          git clone --depth 1 --branch v0.22 https://github.com/egzumer/uv-k5-firmware-custom.git
+
+      - name: Apply Polish localization
+        run: python3 uvk5-pl/build_polish.py
+
+      - name: Build firmware
+        working-directory: uv-k5-firmware-custom
+        run: |
+          make clean
+          make VERSION_STRING=PL022 AUTHOR_STRING=KINIU_PL
+          arm-none-eabi-size firmware
+          ls -lah firmware*
+
+      - name: Collect release package
+        run: |
+          mkdir -p release
+          cp uv-k5-firmware-custom/firmware.packed.bin release/KINIU_PL_Egzumer_v0.22.packed.bin
+          cp uv-k5-firmware-custom/firmware.bin release/KINIU_PL_Egzumer_v0.22.bin
+          cp uv-k5-firmware-custom/firmware.elf release/KINIU_PL_Egzumer_v0.22.elf
+          cp uvk5-pl/build_polish.py release/build_polish.py
+          cat > release/README_PL.txt <<'EOF'
+          Quansheng UV-K5 / UV-K6 - Egzumer v0.22 KINIU_PL
+
+          Zmiany:
+          - menu spolszczone bez polskich znakow,
+          - komunikaty glosowe wylaczone,
+          - NOAA wylaczone,
+          - analizator widma pozostawiony,
+          - kopiowanie kanalu do VFO pozostawione,
+          - baza: oficjalny Egzumer v0.22.
+
+          Do wgrywania uzyj pliku:
+          KINIU_PL_Egzumer_v0.22.packed.bin
+
+          UWAGA: firmware jest przeznaczony dla klasycznej platformy UV-K5/K6
+          zgodnej z Egzumerem v0.22 (DP32G030). Przed wgraniem zachowaj kopie
+          ustawien i kalibracji radia.
+          EOF
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KINIU-PL-Egzumer-v0.22
+          path: release/
+          if-no-files-found: error
